@@ -1,0 +1,37 @@
+version: '2'
+services:
+    nginx:
+        image: nginx:latest
+        container_name: wp-web
+        restart: always
+        ports:
+            - "80:80"
+        volumes:
+            - ./web-www:/www-data
+            - ./nginx-default.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - wp-net
+    php:
+        image: php:7-fpm
+        container_name: wp-fpm
+        restart: always
+        volumes:
+            - ./web-www:/www-data
+        networks:
+            - wp-net
+    sql:
+        image: mysql:latest
+        container_name: wp-sql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: p4ssword
+            MYSQL_DATABASE: wpdevel
+            MYSQL_USER: wpdevel
+            MYSQL_PASSWORD: p4ssword
+        volumes:
+            - ./sql-data:/var/lib/mysql
+        networks:
+            - wp-net
+networks:
+    wp-net:
+        driver: bridge
